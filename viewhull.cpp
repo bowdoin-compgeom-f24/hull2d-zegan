@@ -265,7 +265,10 @@ int main(int argc, char** argv) {
   assert(NPOINTS >0); 
 
   //populate the points 
-  initialize_points_random(points, NPOINTS);
+  //initialize_points_random(points, NPOINTS);
+  //initialize_points_circle(points, NPOINTS);
+  //initialize_points_cross(points, NPOINTS);
+  initialize_points_horizontal_line(points, NPOINTS);
   //print_vector("points:", points);
 
   //compute the convex hull 
