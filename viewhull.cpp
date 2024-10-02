@@ -159,8 +159,6 @@ void initialize_points_circle(vector<point2d>& pts, int n) {
 
 
 
-
-
 /* ****************************** */
 /* Initializes pts with n points on a line.  The points are in the
    range [0, WINSIZE] x [0, WINSIZE].
@@ -234,7 +232,293 @@ void initialize_points_cross(vector<point2d>& pts, int n) {
 
 }
 
+/* ****************************** */
+/* Initializes pts with n points on the sides of a square.  The square
+   has the range (WINSIZE/4,WINSIZE/4) to (3*WINSIZE/4,3*WINSIZE/4).
+*/ 
+void initialize_points_square(vector<point2d>& pts, int n) {
+  printf("\ninitialize points square\n"); 
 
+  //clear the vector just to be safe 
+  pts.clear(); 
+  int width = WINDOWSIZE / 2;
+  int start = WINDOWSIZE / 4;
+
+  //4 sides of the square w/ evenly distrubuted points
+  for (int i = 0; i < n/4; i++){
+    point2d ptop;
+    point2d pbottom;
+    double offset = (double)4 / n * width;
+    double dist = offset * i;
+    //bottom and top of square
+    ptop.x = start + dist + offset;
+    pbottom.x = start + dist;
+    //bottom
+    pbottom.y = start;
+    pts.push_back(pbottom);
+    //top
+    ptop.y = start + width;
+    pts.push_back(ptop);
+
+    point2d pleft;
+    point2d pright;
+    //sides of the square
+    pleft.y = start + dist + offset;
+    pright.y = start + dist;
+    //left side
+    pleft.x = start;
+    pts.push_back(pleft);
+    //right side of square
+    pright.x = start + width;
+    pts.push_back(pright);
+  }
+
+  //put the extra points on the middle diagonal:
+  for (int i = 0; i < (n % 4); i++){
+    point2d p;
+    p.x = start + (i+1)*(width / 4);
+    p.y = start + (i+1)*(width / 4);
+    pts.push_back(p);
+  }
+}
+
+/* ****************************** */
+/* Initializes pts with n points on the sides of a square, rotated 45 degrees from the x and y axes.  The square
+   The square is centered in the window with sidelength WINSIZE/4 * SQRT(2) so that it has width WINSIZE/2
+*/ 
+void initialize_points_diamond(vector<point2d>& pts, int n) {
+  printf("\ninitialize points square\n"); 
+
+  //clear the vector just to be safe 
+  pts.clear(); 
+  int width = WINDOWSIZE / 2; //from left corner to right corner (so sidelength is sqrt(2)/2 times this)
+  int center = WINDOWSIZE / 2;
+
+  //4 sides of the square w/ evenly distrubuted points, but the square is rotated 45 degrees CCW
+  //for loop evenly distributes points along each of the four edges at once, distrubting in clockwise direction
+  for (int i = 0; i < n/4; i++){
+    double offset = (double)2 / n * width * i; // to distribute 1/4 of all the points at equal intervals
+    
+    point2d pNW; //point on northwest edge
+    pNW.x = center - ((double)width / 2) + offset;
+    pNW.y = center + offset;
+    pts.push_back(pNW);
+
+    point2d pSE; //point on southeast edge
+    pSE.x = center + ((double)width / 2) - offset;
+    pSE.y = center - offset;
+    pts.push_back(pSE);
+
+    point2d pSW; //point on southwest edge
+    pSW.x = center - offset;
+    pSW.y = center - ((double)width / 2) + offset;
+    pts.push_back(pSW);
+
+    point2d pNE; //point on northeast edge
+    pNE.x = center + offset;
+    pNE.y = center + ((double)width / 2) - offset;
+    pts.push_back(pNE);
+  }
+
+  //put the extra points in the middle:
+  for (int i = 0; i < (n % 4); i++){
+    point2d p;
+    p.x = center - ((double)width / 2) + (i+1)*(width / 4);
+    p.y = center;
+    pts.push_back(p);
+  }
+}
+
+/* ****************************** */
+/* Initializes pts with n points on the edges of a heart. 
+    within the x=[0,WINDOWSIZE] y=[0,WINDOWSIZE] window.
+*/ 
+void initialize_points_heart(vector<point2d>& pts, int n) { 
+
+  //clear the vector just to be safe 
+  pts.clear(); 
+  
+  double t = 2*M_PI / n;
+  point2d p;
+
+  for (int i = 0; i<n; i++){
+    double a = i*t;
+    p.x = 16 * sin(a) * sin(a) * sin(a);
+    p.y = 13 * cos(a) - 5 * cos(2 * a) - 2 * cos(3 * a) - cos(4 * a);
+    p.x *= (WINDOWSIZE/100);
+    p.y *= (WINDOWSIZE/100);
+    p.x += (WINDOWSIZE / 2);
+    p.y += (WINDOWSIZE / 2);
+    pts.push_back(p);
+  }
+  printf("\ninitialized points in a heart\n");
+  //printf("\ninitialized %lu points in a heart\n", pts.size());
+}
+
+/*
+  initializer written by Ziyou Hu and Victoria Figueroa
+  initializes points in two vertical lines
+*/
+void initialize_points_two_vertical(vector<point2d>& pts, int n) {
+  
+  printf("\ninitialize points that make two vertical lines.\n"); 
+    //clear the vector just to be safe 
+  pts.clear(); 
+  
+  point2d p; 
+  for (int i=0; i<n/2; i++) {
+    p.y = (int)(.3*WINDOWSIZE)/2 + random() % ((int)(.7*WINDOWSIZE)); 
+    p.x =  WINDOWSIZE/2; 
+    pts.push_back(p); 
+  }
+    for (int i=0; i<n/2; i++) {
+    p.y = (int)(.3*WINDOWSIZE)/2 + random() % ((int)(.7*WINDOWSIZE)); 
+    p.x =  WINDOWSIZE/4; 
+    pts.push_back(p); 
+  }
+}
+
+
+/*
+  initializer written by Ziyou Hu and Victoria Figueroa
+  initializes points in one vertical line
+*/
+void initialize_points_vertical_line(vector<point2d>&pts, int n){
+    printf("\ninitialize points line\n"); 
+  //clear the vector just to be safe 
+  pts.clear(); 
+  
+  point2d p; 
+  for (int i=0; i<n; i++) {
+    p.y = (int)(.3*WINDOWSIZE)/2 + random() % ((int)(.7*WINDOWSIZE)); 
+    p.x =  WINDOWSIZE/2; 
+    pts.push_back(p); 
+  }
+}
+
+/*
+  function written by Tom Han
+  initializes points in the shame of a number 1
+*/
+void initialize_points_1(vector<point2d>&pts, int n){
+  printf("\ninitialize points 1\n"); 
+  pts.clear();
+  assert(pts.size() == 0);
+
+  point2d p;
+  int pos, pos2;
+  for (int i = 0; i < n; i++)
+  {
+    switch (i % 7) {
+      case 0:
+      case 1:
+        // Base
+        p.y = random() % (int)(.1*WINDOWSIZE);
+        p.y += (int) (0.15 * WINDOWSIZE);
+        p.x = random() % (int)(0.3*WINDOWSIZE);
+        p.x += (int) (0.35 * WINDOWSIZE);
+        break;
+      case 2:
+        pos = random() % (int) (0.1*WINDOWSIZE);
+        p.x = pos; p.y = pos;
+        p.x += (int) (0.4 * WINDOWSIZE);
+        p.y += (int) (0.7*WINDOWSIZE);
+        pos2 = random() % (int) (0.05*WINDOWSIZE);
+        p.x -= pos2;
+        p.y += pos2;
+        break;
+      case 3:
+        // Colinear case
+        p.x = (int)(0.25*WINDOWSIZE) + random() % ((int)(0.5*WINDOWSIZE));
+        p.y = (int) (0.10*WINDOWSIZE);
+        break;
+      default:
+        //stem
+        p.y = (int) (0.25*WINDOWSIZE);
+        p.y += random() % (int) (0.6*WINDOWSIZE);
+        p.x = (int) (0.45*WINDOWSIZE);
+        p.x += random() % (int) (0.1*WINDOWSIZE);
+        break;
+    }
+    pts.push_back(p);
+  }
+}
+
+/*
+  function written by Tom Han
+  initializes points in the shape of a number 2
+*/
+void initialize_points_2(vector<point2d>&pts, int n){
+  printf("\ninitialize points 2\n"); 
+  pts.clear();
+  assert(pts.size() == 0);
+
+  point2d p;
+  int x_noise, y_noise;
+  int pos, pos2;
+  for (int i = 0; i < n; i++)
+  {
+    switch (i % 3) {
+      case 0:
+        p.x = (int)(0.25*WINDOWSIZE) + random() % ((int)(0.5*WINDOWSIZE));
+        p.y = (int) (0.15*WINDOWSIZE);
+        break;
+      case 1:
+        pos = random() % (int)(0.5*WINDOWSIZE);
+        p.x = pos; p.y = pos;
+        p.x += (int) (0.25*WINDOWSIZE);
+        p.y += (int) (0.15*WINDOWSIZE);
+        break;
+      case 2: 
+        pos2 = random() % 180;
+        p.x = (int)(0.5 * WINDOWSIZE) + (int) ((0.25*WINDOWSIZE) * cos((M_PI * pos2)/180));
+        p.y = (int)(0.65 * WINDOWSIZE) + (int) ((0.25*WINDOWSIZE) * sin((M_PI * pos2)/180));
+        break;
+    }
+    x_noise = random() % ((int) (0.05*WINDOWSIZE));
+    y_noise = random() % ((int) (0.05*WINDOWSIZE));
+    p.x += x_noise;
+    p.y += y_noise;
+    pts.push_back(p);
+  }
+}
+
+/* function written by Abhi Nagireddygari and Max Danenhower
+    initializes points randomly inside a triangle with three points
+      at the vertices
+*/
+void initialize_points_triangle(vector<point2d>&pts, int n) {
+  printf("\ninitialize points triangle\n");
+  pts.clear();
+  point2d p;
+  for (int i = 0; i < n; i++) {
+    // first three points make the points of the triangle
+    if (i == 0) {
+      p.x = WINDOWSIZE/2;
+      p.y = WINDOWSIZE;
+    }
+    else if (i == 1) {
+      p.x = 0;
+      p.y = 0;
+    }
+    else if (i == 2) {
+      p.x = WINDOWSIZE;
+      p.y = 0;
+    }
+    // all the other points are randomly distributed in the triangle
+    else {
+      double a = random() / static_cast<double>(RAND_MAX);
+      double b = random() / static_cast<double>(RAND_MAX);
+      if ((a + b) > 1) {
+        a = 1 - a;
+        b = 1 - b;
+      }
+      p.x = a*WINDOWSIZE*0.5 + b*WINDOWSIZE;
+      p.y = a*WINDOWSIZE;
+    }
+    pts.push_back(p);
+  }
+}
 
 
 /* ****************************** */
@@ -265,10 +549,18 @@ int main(int argc, char** argv) {
   assert(NPOINTS >0); 
 
   //populate the points 
-  //initialize_points_random(points, NPOINTS);
+  initialize_points_random(points, NPOINTS);
   //initialize_points_circle(points, NPOINTS);
   //initialize_points_cross(points, NPOINTS);
-  initialize_points_horizontal_line(points, NPOINTS);
+  //initialize_points_horizontal_line(points, NPOINTS);
+  //initialize_points_heart(points, NPOINTS);
+  //initialize_points_square(points, NPOINTS);
+  //initialize_points_diamond(points, NPOINTS);
+  //initialize_points_two_vertical(points, NPOINTS); //from Victoria and Ziyou
+  //initialize_points_vertical_line(points, NPOINTS); //from Victoria and Ziyou
+  //initialize_points_1(points, NPOINTS); //from Tom
+  //initialize_points_2(points, NPOINTS); //from Tom
+  //initialize_points_triangle(points, NPOINTS); //from Abhi and Max
   //print_vector("points:", points);
 
   //compute the convex hull 
@@ -329,6 +621,12 @@ void display(void) {
      The points are in the range [0, WINSIZE] x [0, WINSIZE] so they
      need to be mapped to [-1,1]x [-1,1] */
   
+  
+  //scale and translation are represented as a transformation matrix M
+  //we add the scale then the translation, but when M is applied to a point
+  //  the translation is applied first, then the scale is applied
+  //  this is all done by representing the transformation with an additional dimension
+  //  as a 3D homogeneous coordinates
   //then scale the points to [0,2]x[0,2]
   glScalef(2.0/WINDOWSIZE, 2.0/WINDOWSIZE, 1.0);  
   //first translate the points to [-WINDOWSIZE/2, WINDOWSIZE/2]
